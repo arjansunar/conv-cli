@@ -2,6 +2,10 @@
 
 Cli to make conventional commits easier.
 
+### Usage
+
+[Usage vid](./preview.webm)
+
 ### References
 
 - [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
