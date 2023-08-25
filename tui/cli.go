@@ -15,7 +15,7 @@ const (
 	CommitLevel Level = iota
 	ScopeLevel
 	Desc
-	Commit
+	Commiting
 	Exit
 )
 
@@ -52,16 +52,18 @@ func InitialModel() Model {
 func (m Model) currentMode() string {
 	switch m.level {
 	case CommitLevel:
-		return "commit"
+		return "TYPE"
 	case ScopeLevel:
-		return "scope"
+		return "SCOPE"
 	case Desc:
-		return "desc"
+		return "DESC"
+	case Commiting:
+		return "COMMITING"
 	case Exit:
-		return "exit"
+		return "EXIT"
 	}
 
-	return "spinner"
+	return "LOADING..."
 }
 
 func (m Model) Init() tea.Cmd {
@@ -95,7 +97,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return updateScope(msg, m)
 	case Desc:
 		return updateDesc(msg, m)
-	case Commit:
+	case Commiting:
 		m.CommitMsg = CommitBuilder(m)
 		return m, nil
 	}
@@ -113,7 +115,7 @@ func (m Model) View() string {
 		s += scopeView(m)
 	case Desc:
 		s += descView(m)
-	case Commit:
+	case Commiting:
 		s += commitView(m)
 	}
 

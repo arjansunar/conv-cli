@@ -18,7 +18,7 @@ func main() {
 	}
 
 	// Assert the final tea.Model to our local model and print the choice.
-	if m, ok := m.(tui.Model); ok {
+	if m, ok := m.(tui.Model); ok && m.CommitMsg != nil {
 		fmt.Printf("\nCommiting your message....")
 		if _, err := m.CommitMsg.Run(); err != nil {
 			fmt.Println("Oh no:", err)
