@@ -1,8 +1,5 @@
 package main
 
-// A simple example that shows how to retrieve a value from a Bubble Tea
-// program after the Bubble Tea has exited.
-
 import (
 	"fmt"
 	"os"
@@ -11,7 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var choices = []string{"Taro", "Coffee", "Lychee"}
+var choices = []string{"feat", "fix", "refactor", "test", "chore"}
 
 type model struct {
 	cursor int
