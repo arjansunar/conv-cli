@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -16,6 +17,8 @@ type Level int
 const (
 	CommitLevel Level = iota
 	ScopeLevel
+	Desc
+	Exit
 )
 
 type model struct {
@@ -23,20 +26,25 @@ type model struct {
 	cursor           int
 	commitType       string
 	scope            textinput.Model
-	desc             string
+	desc             textarea.Model
 	isBreakingChange bool
 }
 
 func initialModel() model {
 	ti := textinput.New()
-	ti.Placeholder = "Scope"
+	ti.Placeholder = "Add Scope"
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
 
+	ta := textarea.New()
+	ta.Placeholder = "Describe the changes"
+	ta.Focus()
+
 	return model{
 		scope:            ti,
 		level:            CommitLevel,
+		desc:             ta,
 		isBreakingChange: false,
 	}
 }
@@ -46,8 +54,6 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-
-	var cmd tea.Cmd
 
 	// Make sure these keys always quit
 	if msg, ok := msg.(tea.KeyMsg); ok {
@@ -62,8 +68,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return updateCommitType(msg, m)
 
 	case ScopeLevel:
-		m.scope, cmd = m.scope.Update(msg)
-		return m, cmd
+		return updateScope(msg, m)
+
+	case Desc:
+		return updateDesc(msg, m)
+	case Exit:
+		return m, tea.Quit
 	}
 
 	return m, nil
@@ -72,6 +82,43 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func goToNextLevel(m model) tea.Model {
 	m.level++
 	return m
+}
+
+func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+
+		switch msg.String() {
+		case "enter":
+			m = goToNextLevel(m).(model)
+			return m, nil
+		}
+
+	}
+
+	m.desc, cmd = m.desc.Update(msg)
+	return m, cmd
+
+}
+
+func updateScope(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+
+		switch msg.String() {
+		case "enter":
+			m = goToNextLevel(m).(model)
+			return m, nil
+		}
+
+	}
+
+	m.scope, cmd = m.scope.Update(msg)
+	return m, cmd
 }
 
 func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
@@ -112,6 +159,8 @@ func (m model) View() string {
 		return commitTypeView(m)
 	case ScopeLevel:
 		return scopeView(m)
+	case Desc:
+		return descView(m)
 	}
 
 	return s
@@ -141,6 +190,15 @@ func scopeView(m model) string {
 	return fmt.Sprintf(
 		"Add scope of the commit\n\n%s\n\n%s",
 		m.scope.View(),
+		"(esc to quit)",
+	) + "\n"
+}
+
+// View for adding desc
+func descView(m model) string {
+	return fmt.Sprintf(
+		"Add description of the commit\n\n%s\n\n%s",
+		m.desc.View(),
 		"(esc to quit)",
 	) + "\n"
 }
