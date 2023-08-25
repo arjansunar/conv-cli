@@ -10,7 +10,7 @@ func updateCommitType(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			// Send the choice on the channel and exit.
-			m.commitType = CommitType[m.cursor]
+			m.CommitType = CommitType[m.cursor]
 			m = GoToNextLevel(m).(Model)
 			return m, nil
 
@@ -45,7 +45,7 @@ func updateScope(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 	}
 
-	m.scope, cmd = m.scope.Update(msg)
+	m.Scope, cmd = m.Scope.Update(msg)
 	return m, cmd
 }
 
@@ -63,7 +63,7 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 	}
 
-	m.desc, cmd = m.desc.Update(msg)
+	m.Desc, cmd = m.Desc.Update(msg)
 	return m, cmd
 
 }

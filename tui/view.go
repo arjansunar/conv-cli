@@ -18,7 +18,7 @@ func commitTypeView(m Model) string {
 		}
 		s.WriteString(CommitType[i])
 		// add ! if breaking change
-		if m.isBreakingChange {
+		if m.IsBreakingChange {
 			s.WriteString("!")
 		}
 		s.WriteString("\n")
@@ -32,7 +32,7 @@ func commitTypeView(m Model) string {
 func scopeView(m Model) string {
 	return fmt.Sprintf(
 		"Add scope of the commit\n\n%s",
-		m.scope.View(),
+		m.Scope.View(),
 	) + "\n"
 }
 
@@ -40,6 +40,11 @@ func scopeView(m Model) string {
 func descView(m Model) string {
 	return fmt.Sprintf(
 		"Add description of the commit\n\n%s",
-		m.desc.View(),
+		m.Desc.View(),
 	) + "\n"
+}
+
+// View for exiting
+func exitView(m Model) string {
+	return fmt.Sprintf("Preview: \n\t%s", Format(m))
 }

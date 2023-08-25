@@ -19,10 +19,10 @@ const (
 type Model struct {
 	level            Level
 	cursor           int
-	commitType       string
-	scope            textinput.Model
-	desc             textarea.Model
-	isBreakingChange bool
+	CommitType       string
+	Scope            textinput.Model
+	Desc             textarea.Model
+	IsBreakingChange bool
 }
 
 func InitialModel() Model {
@@ -37,11 +37,26 @@ func InitialModel() Model {
 	ta.Focus()
 
 	return Model{
-		scope:            ti,
+		Scope:            ti,
 		level:            CommitLevel,
-		desc:             ta,
-		isBreakingChange: false,
+		Desc:             ta,
+		IsBreakingChange: false,
 	}
+}
+
+func (m Model) currentMode() string {
+	switch m.level {
+	case CommitLevel:
+		return "commit"
+	case ScopeLevel:
+		return "scope"
+	case Desc:
+		return "desc"
+	case Exit:
+		return "exit"
+	}
+
+	return "spinner"
 }
 
 func (m Model) Init() tea.Cmd {
@@ -60,7 +75,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch k {
 
 		case "ctrl+b":
-			m.isBreakingChange = !m.isBreakingChange
+			m.IsBreakingChange = !m.IsBreakingChange
 		case "ctrl+n":
 			return GoToNextLevel(m), nil
 		case "ctrl+p":
@@ -87,21 +102,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) currentMode() string {
-	switch m.level {
-	case CommitLevel:
-		return "commit"
-	case ScopeLevel:
-		return "scope"
-	case Desc:
-		return "desc"
-	case Exit:
-		return "exit"
-	}
-
-	return "spinner"
-}
-
 func (m Model) View() string {
 	var s string
 
@@ -113,7 +113,7 @@ func (m Model) View() string {
 	case Desc:
 		s += descView(m)
 	case Exit:
-		s += "Exiting..."
+		s += exitView(m)
 	}
 
 	currentMode := m.currentMode()
