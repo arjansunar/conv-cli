@@ -161,6 +161,8 @@ func (m model) View() string {
 		return scopeView(m)
 	case Desc:
 		return descView(m)
+	case Exit:
+		return "Exiting..."
 	}
 
 	return s
