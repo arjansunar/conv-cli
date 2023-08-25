@@ -72,5 +72,4 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 	m.Desc, cmd = m.Desc.Update(msg)
 	return m, cmd
-
 }

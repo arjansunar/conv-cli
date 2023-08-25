@@ -44,7 +44,7 @@ func descView(m Model) string {
 	) + "\n"
 }
 
-// View for exiting
-func exitView(m Model) string {
-	return fmt.Sprintf("Preview: \n\t%s", Format(m))
+// View for commit
+func commitView(m Model) string {
+	return fmt.Sprintf("Do you want to commit?(y/n)\n\t%s", Format(m))
 }

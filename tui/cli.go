@@ -1,7 +1,9 @@
 package tui
 
 import (
+	git_commands "cli/git_command"
 	"fmt"
+
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,6 +15,7 @@ const (
 	CommitLevel Level = iota
 	ScopeLevel
 	Desc
+	Commit
 	Exit
 )
 
@@ -24,6 +27,7 @@ type Model struct {
 	Desc             textarea.Model
 	IsBreakingChange bool
 	Err              string
+	CommitMsg        *git_commands.GitCommandBuilder
 }
 
 func InitialModel() Model {
@@ -84,22 +88,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	switch m.level {
-	case -1:
-		return m, tea.Quit
 	case CommitLevel:
 		m.Err = ""
 		return updateCommitType(msg, m)
-
 	case ScopeLevel:
 		return updateScope(msg, m)
-
 	case Desc:
 		return updateDesc(msg, m)
-	case Exit:
-		return m, tea.Quit
+	case Commit:
+		m.CommitMsg = CommitBuilder(m)
+		return m, nil
 	}
 
-	return m, nil
+	return m, tea.Quit
 }
 
 func (m Model) View() string {
@@ -112,8 +113,8 @@ func (m Model) View() string {
 		s += scopeView(m)
 	case Desc:
 		s += descView(m)
-	case Exit:
-		s += exitView(m)
+	case Commit:
+		s += commitView(m)
 	}
 
 	currentMode := m.currentMode()
@@ -122,6 +123,8 @@ func (m Model) View() string {
 	if m.Err != "" {
 		s += ErrorStyle.Render(m.Err)
 	}
+
+	s += ErrorStyle.Render(CommitMsgPreview(m))
 
 	return s
 }
