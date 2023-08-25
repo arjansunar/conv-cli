@@ -87,6 +87,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case -1:
 		return m, tea.Quit
 	case CommitLevel:
+		m.Err = ""
 		return updateCommitType(msg, m)
 
 	case ScopeLevel:

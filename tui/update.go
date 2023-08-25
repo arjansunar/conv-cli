@@ -41,6 +41,7 @@ func updateScope(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 		case "ctrl+n", "enter":
 			if m.Scope.Value() != "" {
 				m = GoToNextLevel(m).(Model)
+				m.Err = ""
 			} else {
 				m.Err = "Scope cannot be empty"
 			}
@@ -60,11 +61,12 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "ctrl+n", "enter":
-			if m.Scope.Value() != "" {
+		case "ctrl+n":
+			if m.Desc.Value() != "" {
 				m = GoToNextLevel(m).(Model)
+				m.Err = ""
 			} else {
-				m.Err = "Scope cannot be empty"
+				m.Err = "Description cannot be empty"
 			}
 
 			return m, nil
