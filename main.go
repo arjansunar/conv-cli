@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -107,70 +106,6 @@ func goToPrevLevel(m model) tea.Model {
 	return m
 }
 
-func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-
-		switch msg.String() {
-		case "ctrl+n":
-			m = goToNextLevel(m).(model)
-			return m, nil
-		}
-
-	}
-
-	m.desc, cmd = m.desc.Update(msg)
-	return m, cmd
-
-}
-
-func updateScope(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-
-		switch msg.String() {
-		case "enter":
-			m = goToNextLevel(m).(model)
-			return m, nil
-		}
-
-	}
-
-	m.scope, cmd = m.scope.Update(msg)
-	return m, cmd
-}
-
-func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "enter":
-			// Send the choice on the channel and exit.
-			m.commitType = commitType[m.cursor]
-			m = goToNextLevel(m).(model)
-			return m, nil
-
-		case "down", "j":
-			m.cursor++
-			if m.cursor >= len(commitType) {
-				m.cursor = 0
-			}
-
-		case "up", "k":
-			m.cursor--
-			if m.cursor < 0 {
-				m.cursor = len(commitType) - 1
-			}
-		}
-	}
-
-	return m, nil
-}
-
 func (m model) currentMode() string {
 	switch m.level {
 	case CommitLevel:
@@ -204,47 +139,6 @@ func (m model) View() string {
 	s += helpStyle.Render(fmt.Sprintf("\nMode: %s\t\nCtrl + n: Go to next • Ctrl + p: Go to prev • Ctrl + b: Toggle breaking change  • q: exit • \n", currentMode))
 
 	return s
-}
-
-// View for choosing commit types
-func commitTypeView(m model) string {
-	s := strings.Builder{}
-	s.WriteString("Select type of commit\n\n")
-
-	for i := 0; i < len(commitType); i++ {
-		if m.cursor == i {
-			s.WriteString("(•) ")
-		} else {
-			s.WriteString("( ) ")
-		}
-		s.WriteString(commitType[i])
-		// add ! if breaking change
-		if m.isBreakingChange {
-			s.WriteString("!")
-		}
-		s.WriteString("\n")
-	}
-	s.WriteString("\n(press q to quit)\n")
-
-	return s.String()
-}
-
-// View for adding scope
-func scopeView(m model) string {
-	return fmt.Sprintf(
-		"Add scope of the commit\n\n%s\n\n%s",
-		m.scope.View(),
-		"(esc to quit)",
-	) + "\n"
-}
-
-// View for adding desc
-func descView(m model) string {
-	return fmt.Sprintf(
-		"Add description of the commit\n\n%s\n\n%s",
-		m.desc.View(),
-		"(esc to quit)",
-	) + "\n"
 }
 
 func main() {
