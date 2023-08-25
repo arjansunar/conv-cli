@@ -5,14 +5,40 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var choices = []string{"feat", "fix", "refactor", "test", "chore"}
+var commitType = []string{"feat", "fix", "refactor", "test", "chore"}
+
+type Level int
+
+const (
+	CommitLevel Level = iota
+	ScopeLevel
+)
 
 type model struct {
-	cursor int
-	choice string
+	level            Level
+	cursor           int
+	commitType       string
+	scope            textinput.Model
+	desc             string
+	isBreakingChange bool
+}
+
+func initialModel() model {
+	ti := textinput.New()
+	ti.Placeholder = "Scope"
+	ti.Focus()
+	ti.CharLimit = 156
+	ti.Width = 20
+
+	return model{
+		scope:            ti,
+		level:            CommitLevel,
+		isBreakingChange: false,
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -20,6 +46,35 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+
+	var cmd tea.Cmd
+
+	// Make sure these keys always quit
+	if msg, ok := msg.(tea.KeyMsg); ok {
+		k := msg.String()
+		if k == "q" || k == "esc" || k == "ctrl+c" {
+			return m, tea.Quit
+		}
+	}
+
+	switch m.level {
+	case CommitLevel:
+		return updateCommitType(msg, m)
+
+	case ScopeLevel:
+		m.scope, cmd = m.scope.Update(msg)
+		return m, cmd
+	}
+
+	return m, nil
+}
+
+func goToNextLevel(m model) tea.Model {
+	m.level++
+	return m
+}
+
+func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -28,19 +83,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			// Send the choice on the channel and exit.
-			m.choice = choices[m.cursor]
-			return m, tea.Quit
+			m.commitType = commitType[m.cursor]
+			m = goToNextLevel(m).(model)
+			return m, nil
 
 		case "down", "j":
 			m.cursor++
-			if m.cursor >= len(choices) {
+			if m.cursor >= len(commitType) {
 				m.cursor = 0
 			}
 
 		case "up", "k":
 			m.cursor--
 			if m.cursor < 0 {
-				m.cursor = len(choices) - 1
+				m.cursor = len(commitType) - 1
 			}
 		}
 	}
@@ -49,16 +105,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := strings.Builder{}
-	s.WriteString("What kind of Bubble Tea would you like to order?\n\n")
+	var s string
 
-	for i := 0; i < len(choices); i++ {
+	switch m.level {
+	case CommitLevel:
+		return commitTypeView(m)
+	case ScopeLevel:
+		return scopeView(m)
+	}
+
+	return s
+}
+
+// View for choosing commit types
+func commitTypeView(m model) string {
+	s := strings.Builder{}
+	s.WriteString("Select type of commit\n\n")
+
+	for i := 0; i < len(commitType); i++ {
 		if m.cursor == i {
 			s.WriteString("(•) ")
 		} else {
 			s.WriteString("( ) ")
 		}
-		s.WriteString(choices[i])
+		s.WriteString(commitType[i])
 		s.WriteString("\n")
 	}
 	s.WriteString("\n(press q to quit)\n")
@@ -66,8 +136,17 @@ func (m model) View() string {
 	return s.String()
 }
 
+// View for adding scope
+func scopeView(m model) string {
+	return fmt.Sprintf(
+		"Add scope of the commit\n\n%s\n\n%s",
+		m.scope.View(),
+		"(esc to quit)",
+	) + "\n"
+}
+
 func main() {
-	p := tea.NewProgram(model{})
+	p := tea.NewProgram(initialModel())
 
 	// Run returns the model as a tea.Model.
 	m, err := p.Run()
@@ -77,7 +156,7 @@ func main() {
 	}
 
 	// Assert the final tea.Model to our local model and print the choice.
-	if m, ok := m.(model); ok && m.choice != "" {
-		fmt.Printf("\n---\nYou chose %s!\n", m.choice)
+	if m, ok := m.(model); ok && m.commitType != "" {
+		fmt.Printf("\n---\nYou chose %s!\n", m.commitType)
 	}
 }
