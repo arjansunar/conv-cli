@@ -67,13 +67,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
-		if k == "ctrl+n" {
-			return goToNextLevel(m), nil
-		}
+		switch k {
 
-		if k == "ctrl+p" {
+		case "ctrl+b":
+			m.isBreakingChange = !m.isBreakingChange
+		case "ctrl+n":
+			return goToNextLevel(m), nil
+		case "ctrl+p":
 			return goToPrevLevel(m), nil
 		}
+
 	}
 
 	switch m.level {
@@ -198,7 +201,7 @@ func (m model) View() string {
 	}
 
 	currentMode := m.currentMode()
-	s += helpStyle.Render(fmt.Sprintf("\nCtrl + n: Go to next • n: new %s • q: exit\n", currentMode))
+	s += helpStyle.Render(fmt.Sprintf("\nMode: %s\t\nCtrl + n: Go to next • Ctrl + p: Go to prev • Ctrl + b: Toggle breaking change  • q: exit • \n", currentMode))
 
 	return s
 }
