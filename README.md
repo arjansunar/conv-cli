@@ -4,7 +4,7 @@ Cli to make conventional commits easier.
 
 ### Usage
 
-[Usage vid](./preview.webm)
+![Usage vid](./preview.gif)
 
 ### References
 
