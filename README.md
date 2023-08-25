@@ -11,3 +11,8 @@ Cli to make conventional commits easier.
 - [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 - [Commitizen](https://github.com/commitizen/cz-cli)
 - [Lazygit](https://github.com/jesseduffield/lazygit)
+
+### TODOs
+
+- [ ] prettify the TUI
+- [ ] add flags to use without TUI
