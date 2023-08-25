@@ -8,7 +8,7 @@ func updateCommitType(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "enter":
+		case "ctrl+n", "enter":
 			// Send the choice on the channel and exit.
 			m.CommitType = CommitType[m.cursor]
 			m = GoToNextLevel(m).(Model)
@@ -38,8 +38,12 @@ func updateScope(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "enter":
-			m = GoToNextLevel(m).(Model)
+		case "ctrl+n", "enter":
+			if m.Scope.Value() != "" {
+				m = GoToNextLevel(m).(Model)
+			} else {
+				m.Err = "Scope cannot be empty"
+			}
 			return m, nil
 		}
 
@@ -56,8 +60,13 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "ctrl+n":
-			m = GoToNextLevel(m).(Model)
+		case "ctrl+n", "enter":
+			if m.Scope.Value() != "" {
+				m = GoToNextLevel(m).(Model)
+			} else {
+				m.Err = "Scope cannot be empty"
+			}
+
 			return m, nil
 		}
 

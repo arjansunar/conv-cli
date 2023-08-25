@@ -23,6 +23,7 @@ type Model struct {
 	Scope            textinput.Model
 	Desc             textarea.Model
 	IsBreakingChange bool
+	Err              string
 }
 
 func InitialModel() Model {
@@ -76,8 +77,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+b":
 			m.IsBreakingChange = !m.IsBreakingChange
-		case "ctrl+n":
-			return GoToNextLevel(m), nil
 		case "ctrl+p":
 			return GoToPrevLevel(m), nil
 		}
@@ -118,6 +117,10 @@ func (m Model) View() string {
 
 	currentMode := m.currentMode()
 	s += HelpStyle.Render(fmt.Sprintf("\nMode: %s\t\nCtrl + n: Go to next • Ctrl + p: Go to prev • Ctrl + b: Toggle breaking change  • q: exit • \n", currentMode))
+
+	if m.Err != "" {
+		s += ErrorStyle.Render(m.Err)
+	}
 
 	return s
 }
