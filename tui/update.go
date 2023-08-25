@@ -39,12 +39,8 @@ func updateScope(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 		switch msg.String() {
 		case "ctrl+n", "enter":
-			if m.Scope.Value() != "" {
-				m = GoToNextLevel(m).(Model)
-				m.Err = ""
-			} else {
-				m.Err = "Scope cannot be empty"
-			}
+			m.Err = ""
+			m = GoToNextLevel(m).(Model)
 			return m, nil
 		}
 
