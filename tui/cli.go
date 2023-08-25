@@ -28,6 +28,7 @@ type Model struct {
 	IsBreakingChange bool
 	Err              string
 	CommitMsg        *git_commands.GitCommandBuilder
+	ToCommit         bool
 }
 
 func InitialModel() Model {
@@ -46,6 +47,7 @@ func InitialModel() Model {
 		level:            CommitLevel,
 		Desc:             ta,
 		IsBreakingChange: false,
+		ToCommit:         true,
 	}
 }
 
@@ -99,7 +101,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return updateDesc(msg, m)
 	case Commiting:
 		m.CommitMsg = CommitBuilder(m)
-		return m, nil
+		return updateCommiting(msg, m)
 	}
 
 	return m, tea.Quit
@@ -121,6 +123,10 @@ func (m Model) View() string {
 
 	currentMode := m.currentMode()
 	s += HelpStyle.Render(fmt.Sprintf("\nMode: %s\t\nCtrl + n: Go to next • Ctrl + p: Go to prev • Ctrl + b: Toggle breaking change  • q: exit • \n", currentMode))
+
+	if m.level == Desc {
+		s += HelpStyle.Render("\nPress Ctrl + Enter to continue\n\n")
+	}
 
 	if m.Err != "" {
 		s += ErrorStyle.Render(m.Err)

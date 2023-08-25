@@ -46,5 +46,5 @@ func descView(m Model) string {
 
 // View for commit
 func commitView(m Model) string {
-	return fmt.Sprintf("Do you want to commit?(y/n)\n\t%s", Format(m))
+	return fmt.Sprintf("\nDo you want to commit?\t\t(y/n)\n\n\t%s", Format(m))
 }

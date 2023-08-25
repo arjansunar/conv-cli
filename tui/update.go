@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -57,8 +59,8 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "ctrl+n":
-			if m.Desc.Value() != "" {
+		case "ctrl+n", "ctrl+enter":
+			if strings.TrimSpace(m.Desc.Value()) != "" {
 				m = GoToNextLevel(m).(Model)
 				m.Err = ""
 			} else {
@@ -72,4 +74,20 @@ func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 	m.Desc, cmd = m.Desc.Update(msg)
 	return m, cmd
+}
+
+func updateCommiting(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+n", "enter", "y", "Y":
+			m = GoToNextLevel(m).(Model)
+			return m, nil
+		case "n", "N":
+			m.ToCommit = false
+			return m, tea.Quit
+		}
+	}
+
+	return m, nil
 }

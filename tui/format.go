@@ -3,6 +3,7 @@ package tui
 import (
 	"cli/git_command"
 	"fmt"
+	"strings"
 )
 
 func Format(m Model) string {
@@ -14,10 +15,10 @@ func Format(m Model) string {
 	}
 
 	if m.Scope.Value() != "" {
-		scope = fmt.Sprintf("(%s)", m.Scope.Value())
+		scope = fmt.Sprintf("(%s)", strings.TrimSpace(m.Scope.Value()))
 	}
 
-	return fmt.Sprintf("%s%s: %s", ctype, scope, m.Desc.Value())
+	return fmt.Sprintf("%s%s: %s", ctype, scope, strings.TrimSpace(m.Desc.Value()))
 }
 
 func CommitBuilder(m Model) *git_commands.GitCommandBuilder {
