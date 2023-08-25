@@ -8,9 +8,14 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var commitType = []string{"feat", "fix", "refactor", "test", "chore"}
+
+var (
+	helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
+)
 
 type Level int
 
@@ -61,9 +66,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if k == "q" || k == "esc" || k == "ctrl+c" {
 			return m, tea.Quit
 		}
+
+		if k == "ctrl+n" {
+			return goToNextLevel(m), nil
+		}
+
+		if k == "ctrl+p" {
+			return goToPrevLevel(m), nil
+		}
 	}
 
 	switch m.level {
+	case -1:
+		return m, tea.Quit
 	case CommitLevel:
 		return updateCommitType(msg, m)
 
@@ -84,6 +99,11 @@ func goToNextLevel(m model) tea.Model {
 	return m
 }
 
+func goToPrevLevel(m model) tea.Model {
+	m.level--
+	return m
+}
+
 func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -91,7 +111,7 @@ func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "enter":
+		case "ctrl+n":
 			m = goToNextLevel(m).(model)
 			return m, nil
 		}
@@ -125,9 +145,6 @@ func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q", "esc":
-			return m, tea.Quit
-
 		case "enter":
 			// Send the choice on the channel and exit.
 			m.commitType = commitType[m.cursor]
@@ -151,19 +168,37 @@ func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m model) currentMode() string {
+	switch m.level {
+	case CommitLevel:
+		return "commit"
+	case ScopeLevel:
+		return "scope"
+	case Desc:
+		return "desc"
+	case Exit:
+		return "exit"
+	}
+
+	return "spinner"
+}
+
 func (m model) View() string {
 	var s string
 
 	switch m.level {
 	case CommitLevel:
-		return commitTypeView(m)
+		s += commitTypeView(m)
 	case ScopeLevel:
-		return scopeView(m)
+		s += scopeView(m)
 	case Desc:
-		return descView(m)
+		s += descView(m)
 	case Exit:
-		return "Exiting..."
+		s += "Exiting..."
 	}
+
+	currentMode := m.currentMode()
+	s += helpStyle.Render(fmt.Sprintf("\nCtrl + n: Go to next • n: new %s • q: exit\n", currentMode))
 
 	return s
 }
