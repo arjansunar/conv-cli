@@ -1,29 +1,29 @@
-package main
+package tui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+func updateCommitType(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
 			// Send the choice on the channel and exit.
-			m.commitType = commitType[m.cursor]
-			m = goToNextLevel(m).(model)
+			m.commitType = CommitType[m.cursor]
+			m = GoToNextLevel(m).(Model)
 			return m, nil
 
 		case "down", "j":
 			m.cursor++
-			if m.cursor >= len(commitType) {
+			if m.cursor >= len(CommitType) {
 				m.cursor = 0
 			}
 
 		case "up", "k":
 			m.cursor--
 			if m.cursor < 0 {
-				m.cursor = len(commitType) - 1
+				m.cursor = len(CommitType) - 1
 			}
 		}
 	}
@@ -31,7 +31,7 @@ func updateCommitType(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func updateScope(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+func updateScope(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -39,7 +39,7 @@ func updateScope(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 		switch msg.String() {
 		case "enter":
-			m = goToNextLevel(m).(model)
+			m = GoToNextLevel(m).(Model)
 			return m, nil
 		}
 
@@ -49,7 +49,7 @@ func updateScope(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+func updateDesc(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -57,7 +57,7 @@ func updateDesc(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 		switch msg.String() {
 		case "ctrl+n":
-			m = goToNextLevel(m).(model)
+			m = GoToNextLevel(m).(Model)
 			return m, nil
 		}
 

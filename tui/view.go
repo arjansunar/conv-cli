@@ -1,4 +1,4 @@
-package main
+package tui
 
 import (
 	"fmt"
@@ -6,17 +6,17 @@ import (
 )
 
 // View for choosing commit types
-func commitTypeView(m model) string {
+func commitTypeView(m Model) string {
 	s := strings.Builder{}
 	s.WriteString("Select type of commit\n\n")
 
-	for i := 0; i < len(commitType); i++ {
+	for i := 0; i < len(CommitType); i++ {
 		if m.cursor == i {
 			s.WriteString("(•) ")
 		} else {
 			s.WriteString("( ) ")
 		}
-		s.WriteString(commitType[i])
+		s.WriteString(CommitType[i])
 		// add ! if breaking change
 		if m.isBreakingChange {
 			s.WriteString("!")
@@ -29,17 +29,17 @@ func commitTypeView(m model) string {
 }
 
 // View for adding scope
-func scopeView(m model) string {
+func scopeView(m Model) string {
 	return fmt.Sprintf(
-		"Add scope of the commit\n\n%s\n\n%s",
+		"Add scope of the commit\n\n%s",
 		m.scope.View(),
 	) + "\n"
 }
 
 // View for adding desc
-func descView(m model) string {
+func descView(m Model) string {
 	return fmt.Sprintf(
-		"Add description of the commit\n\n%s\n\n%s",
+		"Add description of the commit\n\n%s",
 		m.desc.View(),
 	) + "\n"
 }
