@@ -218,6 +218,10 @@ func commitTypeView(m model) string {
 			s.WriteString("( ) ")
 		}
 		s.WriteString(commitType[i])
+		// add ! if breaking change
+		if m.isBreakingChange {
+			s.WriteString("!")
+		}
 		s.WriteString("\n")
 	}
 	s.WriteString("\n(press q to quit)\n")
