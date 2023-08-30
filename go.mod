@@ -1,4 +1,4 @@
-module cli
+module conv-cli
 
 go 1.21.0
 

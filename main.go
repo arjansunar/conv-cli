@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cli/tui"
+	"conv-cli/tui"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"os"

@@ -1,7 +1,7 @@
 package tui
 
 import (
-	"cli/git_command"
+	"conv-cli/git_command"
 	"fmt"
 	"strings"
 )

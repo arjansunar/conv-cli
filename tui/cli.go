@@ -1,7 +1,7 @@
 package tui
 
 import (
-	git_commands "cli/git_command"
+	git_commands "conv-cli/git_command"
 	"fmt"
 
 	"github.com/charmbracelet/bubbles/textarea"
