@@ -11,7 +11,7 @@ Cli to make conventional commits easier.
 Install using Go
 
 ```bash
-go install https://github.com/arjansunar/conv-cli
+go install github.com/arjansunar/conv-cli@latest
 ```
 
 Install manually

@@ -1,4 +1,4 @@
-module conv-cli
+module github.com/arjansunar/conv-cli
 
 go 1.21.0
 
