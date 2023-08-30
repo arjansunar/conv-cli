@@ -1,8 +1,8 @@
 package tui
 
 import (
-	git_commands "conv-cli/git_command"
 	"fmt"
+	git_commands "github.com/arjansunar/conv-cli/git_command"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"

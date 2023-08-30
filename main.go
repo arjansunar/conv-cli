@@ -1,8 +1,8 @@
 package main
 
 import (
-	"conv-cli/tui"
 	"fmt"
+	"github.com/arjansunar/conv-cli/tui"
 	tea "github.com/charmbracelet/bubbletea"
 	"os"
 )
